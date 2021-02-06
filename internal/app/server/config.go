@@ -6,7 +6,9 @@ import (
 )
 
 type Config struct {
-	Addr string `json:"addr"`
+	Addr     string `json:"addr"`
+	DBPath   string `json:"db_path"`
+	DBDriver string `json:"db_driver"`
 }
 
 func NewConfig() *Config {

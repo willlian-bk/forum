@@ -13,6 +13,11 @@ type Server struct {
 
 func New(config *Config) *Server {
 	handler := handler.NewHandler()
+
+	if _, err := openDB(config); err != nil {
+		log.Fatal(err)
+	}
+
 	return &Server{
 		httpServer: &http.Server{
 			Addr:    config.Addr,
