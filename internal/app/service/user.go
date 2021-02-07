@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/Akezhan1/forum/internal/app/models"
@@ -45,6 +46,27 @@ func (us *UserService) Create(user *models.User) (int, int, error) {
 	}
 
 	return http.StatusOK, int(id), nil
+}
+
+func (us *UserService) Authorization(login, password string) (*models.User, error) {
+	user := &models.User{}
+	var err error
+
+	if strings.Contains(login, "@") {
+		user, err = us.repo.GetByEmail(login)
+	} else {
+		user, err = us.repo.GetByUsername(login)
+	}
+
+	if err != nil {
+		return nil, errors.New("Invalid email/login or password")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errors.New("Invalid email/login or password")
+	}
+
+	return user, nil
 }
 
 func (us *UserService) validateParams(user *models.User) error {

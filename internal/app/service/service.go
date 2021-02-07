@@ -7,6 +7,7 @@ import (
 
 type User interface {
 	Create(*models.User) (int, int, error)
+	Authorization(string, string) (*models.User, error)
 }
 
 type Service struct {

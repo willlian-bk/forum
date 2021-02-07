@@ -8,6 +8,9 @@ import (
 
 type User interface {
 	Create(*models.User) (int64, error)
+	GetByEmail(string) (*models.User, error)
+	GetByUsername(string) (*models.User, error)
+	GetByID(int) (*models.User, error)
 }
 
 type Post interface {

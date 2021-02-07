@@ -22,6 +22,7 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	})
 
 	mux.HandleFunc("/signup", h.SignUp)
+	mux.HandleFunc("/signin", h.SignIn)
 
 	return mux
 }

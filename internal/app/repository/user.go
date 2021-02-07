@@ -23,3 +23,33 @@ func (ur *UserRepository) Create(user *models.User) (int64, error) {
 	}
 	return result.LastInsertId()
 }
+
+func (ur *UserRepository) GetByEmail(email string) (*models.User, error) {
+	user := &models.User{}
+	if err := ur.db.QueryRow(`
+		SELECT id,username,email,role,password,created_date FROM user WHERE email = ?
+	`, email).Scan(&user.ID, &user.Username, &user.Email, &user.Role, &user.Password, &user.CreatedDate); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (ur *UserRepository) GetByUsername(username string) (*models.User, error) {
+	user := &models.User{}
+	if err := ur.db.QueryRow(`
+		SELECT id,username,email,role,password,created_date FROM user WHERE username = ?
+	`, username).Scan(&user.ID, &user.Username, &user.Email, &user.Role, &user.Password, &user.CreatedDate); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (ur *UserRepository) GetByID(id int) (*models.User, error) {
+	user := &models.User{}
+	if err := ur.db.QueryRow(`
+		SELECT id,username,email,role,password,created_date FROM user WHERE id = ?
+	`, id).Scan(&user.ID, &user.Username, &user.Email, &user.Role, &user.Password, &user.CreatedDate); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
