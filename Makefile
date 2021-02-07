@@ -1,3 +1,5 @@
+.SILENT:
+
 .PHONY: build
 build:
 	go build -o forum -v ./cmd/app
