@@ -4,6 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Akezhan1/forum/internal/app/repository"
+	"github.com/Akezhan1/forum/internal/app/service"
+
 	"github.com/Akezhan1/forum/internal/app/handler"
 )
 
@@ -12,11 +15,14 @@ type Server struct {
 }
 
 func New(config *Config) *Server {
-	handler := handler.NewHandler()
-
-	if _, err := openDB(config); err != nil {
+	db, err := repository.OpenDB(config.DBDriver, config.DBPath)
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	repos := repository.NewRepository(db)
+	services := service.NewService(repos)
+	handler := handler.NewHandler(services)
 
 	return &Server{
 		httpServer: &http.Server{

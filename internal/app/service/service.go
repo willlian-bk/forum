@@ -1,8 +1,20 @@
 package service
 
-type Service struct {
+import (
+	"github.com/Akezhan1/forum/internal/app/models"
+	"github.com/Akezhan1/forum/internal/app/repository"
+)
+
+type User interface {
+	Create(*models.User) (int64, error)
 }
 
-func NewService() *Service {
-	return &Service{}
+type Service struct {
+	User
+}
+
+func NewService(r *repository.Repository) *Service {
+	return &Service{
+		User: NewUserService(r.User),
+	}
 }

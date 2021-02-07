@@ -1,13 +1,17 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/Akezhan1/forum/internal/app/service"
+)
 
 type Handler struct {
-	//services *service.Service
+	services *service.Service
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(s *service.Service) *Handler {
+	return &Handler{s}
 }
 
 func (h *Handler) InitRouter() *http.ServeMux {
@@ -16,6 +20,8 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello"))
 	})
+
+	mux.HandleFunc("/signup", h.SignUp)
 
 	return mux
 }
