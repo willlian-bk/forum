@@ -6,7 +6,7 @@ import (
 )
 
 type User interface {
-	Create(*models.User) (int64, error)
+	Create(*models.User) (int, int, error)
 }
 
 type Service struct {

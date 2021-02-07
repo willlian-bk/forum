@@ -17,16 +17,17 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 			Email:    r.FormValue("email"),
 			Username: r.FormValue("username"),
 			Password: r.FormValue("password"),
+			Role:     "user",
 		}
 
-		id, err := h.services.User.Create(user)
+		code, id, err := h.services.User.Create(user)
 		if err != nil {
-			writeResponse(w, 500, err.Error())
+			writeResponse(w, code, err.Error())
 			return
 		}
 
 		user.ID = id
 
-		writeResponse(w, 200, user)
+		writeResponse(w, code, user)
 	}
 }
