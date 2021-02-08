@@ -11,6 +11,11 @@ type User interface {
 	GetByEmail(string) (*models.User, error)
 	GetByUsername(string) (*models.User, error)
 	GetByID(int) (*models.User, error)
+
+	CreateSession(*models.Session) error
+	UpdateSession(*models.Session) error
+	DeleteSession(string) error
+	GetSession(string) (*models.Session, error)
 }
 
 type Post interface {

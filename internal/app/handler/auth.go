@@ -43,11 +43,38 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 		login := r.FormValue("login")
 		password := r.FormValue("password")
 
-		u, err := h.services.User.Authorization(login, password)
+		session, err := h.services.User.Authorization(login, password)
 		if err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
 		} else {
-			writeResponse(w, http.StatusOK, u)
+			http.SetCookie(w, &http.Cookie{
+				Name:    "forum",
+				Path:    "/",
+				Value:   session.Token,
+				Expires: session.ExpTime,
+			})
+			writeResponse(w, http.StatusOK, "OK")
+		}
+	default:
+		writeResponse(w, http.StatusBadRequest, "Bad Method")
+	}
+}
+
+func (h *Handler) LogOut(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		cookie, err := r.Cookie("forum")
+		if err != nil {
+			writeResponse(w, http.StatusUnauthorized, "Unauthorized")
+			return
+		}
+
+		if err := h.services.User.Logout(cookie.Value); err != nil {
+			writeResponse(w, http.StatusInternalServerError, err.Error())
+		} else {
+			cookie.MaxAge = -1
+			http.SetCookie(w, cookie)
+			writeResponse(w, http.StatusOK, "OK")
 		}
 	default:
 		writeResponse(w, http.StatusBadRequest, "Bad Method")

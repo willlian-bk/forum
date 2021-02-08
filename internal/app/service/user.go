@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	uuid "github.com/satori/go.uuid"
+
 	"github.com/Akezhan1/forum/internal/app/models"
 	"github.com/Akezhan1/forum/internal/app/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -48,7 +50,7 @@ func (us *UserService) Create(user *models.User) (int, int, error) {
 	return http.StatusOK, int(id), nil
 }
 
-func (us *UserService) Authorization(login, password string) (*models.User, error) {
+func (us *UserService) Authorization(login, password string) (*models.Session, error) {
 	user := &models.User{}
 	var err error
 
@@ -66,7 +68,38 @@ func (us *UserService) Authorization(login, password string) (*models.User, erro
 		return nil, errors.New("Invalid email/login or password")
 	}
 
-	return user, nil
+	session := &models.Session{
+		UserID:  user.ID,
+		ExpTime: time.Now().Add(time.Minute * 30),
+		Token:   uuid.NewV4().String(),
+	}
+
+	if err := us.repo.CreateSession(session); err != nil {
+		if sqliteErr, ok := err.(sqlite.Error); ok {
+			if sqliteErr.ExtendedCode == sqlite.ErrConstraintUnique {
+				if err2 := us.repo.UpdateSession(session); err2 != nil {
+					return nil, err2
+				}
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	return session, nil
+}
+
+func (us *UserService) Logout(token string) error {
+	return us.repo.DeleteSession(token)
+}
+
+func (us *UserService) IsValidToken(token string) bool {
+	if s, err := us.repo.GetSession(token); err != nil || s == nil {
+		return false
+	}
+	return true
 }
 
 func (us *UserService) validateParams(user *models.User) error {

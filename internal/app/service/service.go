@@ -7,7 +7,9 @@ import (
 
 type User interface {
 	Create(*models.User) (int, int, error)
-	Authorization(string, string) (*models.User, error)
+	Authorization(string, string) (*models.Session, error)
+	Logout(string) error
+	IsValidToken(string) bool
 }
 
 type Service struct {
