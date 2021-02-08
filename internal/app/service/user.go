@@ -37,7 +37,7 @@ func (us *UserService) Create(user *models.User) (int, int, error) {
 	user.Password = string(hashPassword)
 	user.CreatedDate = time.Now()
 
-	id, err := us.repo.Create(user)
+	id, err := us.repo.CreateUser(user)
 	if err != nil {
 		if sqliteErr, ok := err.(sqlite.Error); ok {
 			if sqliteErr.ExtendedCode == sqlite.ErrConstraintUnique {
@@ -55,9 +55,9 @@ func (us *UserService) Authorization(login, password string) (*models.Session, e
 	var err error
 
 	if strings.Contains(login, "@") {
-		user, err = us.repo.GetByEmail(login)
+		user, err = us.repo.GetUserByEmail(login)
 	} else {
-		user, err = us.repo.GetByUsername(login)
+		user, err = us.repo.GetUserByUsername(login)
 	}
 
 	if err != nil {
@@ -110,16 +110,16 @@ func (us *UserService) validateParams(user *models.User) error {
 		return errors.New("Invalid Email")
 	}
 
+	if user.Username == "" || len(user.Username) < 2 {
+		return errors.New("Invalid Username")
+	}
+
 	if len(user.Password) < 6 {
 		return errors.New("Invalid Password")
 	}
 
 	if user.Role != "user" {
 		return errors.New("Invalid Role")
-	}
-
-	if user.Username == "" || len(user.Username) < 2 {
-		return errors.New("Invalid Username")
 	}
 
 	return nil

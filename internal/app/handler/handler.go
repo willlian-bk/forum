@@ -26,19 +26,19 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	routes := []route{
 		{
 			Path:       "/signup",
-			Handler:    h.SignUp,
+			Handler:    h.SignUp(),
 			NeedAuth:   false,
 			OnlyUnauth: true,
 		},
 		{
 			Path:       "/signin",
-			Handler:    h.SignIn,
+			Handler:    h.SignIn(),
 			NeedAuth:   false,
 			OnlyUnauth: true,
 		},
 		{
 			Path:       "/logout",
-			Handler:    h.LogOut,
+			Handler:    h.LogOut(),
 			NeedAuth:   true,
 			OnlyUnauth: false,
 		},

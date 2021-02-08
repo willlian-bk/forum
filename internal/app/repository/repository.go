@@ -7,10 +7,10 @@ import (
 )
 
 type User interface {
-	Create(*models.User) (int64, error)
-	GetByEmail(string) (*models.User, error)
-	GetByUsername(string) (*models.User, error)
-	GetByID(int) (*models.User, error)
+	CreateUser(*models.User) (int64, error)
+	GetUserByEmail(string) (*models.User, error)
+	GetUserByUsername(string) (*models.User, error)
+	GetUserByID(int) (*models.User, error)
 
 	CreateSession(*models.Session) error
 	UpdateSession(*models.Session) error

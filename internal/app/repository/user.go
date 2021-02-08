@@ -14,7 +14,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{db}
 }
 
-func (ur *UserRepository) Create(user *models.User) (int64, error) {
+func (ur *UserRepository) CreateUser(user *models.User) (int64, error) {
 	result, err := ur.db.Exec(`
 	INSERT INTO user (email,username,password,role,created_date) 
 	VALUES (?,?,?,?,?)`, user.Email, user.Username, user.Password, user.Role, user.CreatedDate)
@@ -24,7 +24,7 @@ func (ur *UserRepository) Create(user *models.User) (int64, error) {
 	return result.LastInsertId()
 }
 
-func (ur *UserRepository) GetByEmail(email string) (*models.User, error) {
+func (ur *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	user := &models.User{}
 	if err := ur.db.QueryRow(`
 		SELECT id,username,email,role,password,created_date FROM user WHERE email = ?
@@ -34,7 +34,7 @@ func (ur *UserRepository) GetByEmail(email string) (*models.User, error) {
 	return user, nil
 }
 
-func (ur *UserRepository) GetByUsername(username string) (*models.User, error) {
+func (ur *UserRepository) GetUserByUsername(username string) (*models.User, error) {
 	user := &models.User{}
 	if err := ur.db.QueryRow(`
 		SELECT id,username,email,role,password,created_date FROM user WHERE username = ?
@@ -44,7 +44,7 @@ func (ur *UserRepository) GetByUsername(username string) (*models.User, error) {
 	return user, nil
 }
 
-func (ur *UserRepository) GetByID(id int) (*models.User, error) {
+func (ur *UserRepository) GetUserByID(id int) (*models.User, error) {
 	user := &models.User{}
 	if err := ur.db.QueryRow(`
 		SELECT id,username,email,role,password,created_date FROM user WHERE id = ?
