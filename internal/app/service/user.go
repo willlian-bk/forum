@@ -25,13 +25,13 @@ func NewUserService(repo repository.User) *UserService {
 }
 
 func (us *UserService) Create(user *models.User) (int, int, error) {
+	if err := us.validateParams(user); err != nil {
+		return http.StatusBadRequest, -1, err
+	}
+
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
 		return http.StatusInternalServerError, -1, err
-	}
-
-	if err := us.validateParams(user); err != nil {
-		return http.StatusBadRequest, -1, err
 	}
 
 	user.Password = string(hashPassword)
@@ -100,6 +100,14 @@ func (us *UserService) IsValidToken(token string) bool {
 		return false
 	}
 	return true
+}
+
+func (us *UserService) GetUserIDByToken(token string) (int, error) {
+	if s, err := us.repo.GetSession(token); err != nil {
+		return -1, err
+	} else {
+		return s.UserID, nil
+	}
 }
 
 func (us *UserService) validateParams(user *models.User) error {

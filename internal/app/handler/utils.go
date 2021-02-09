@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func writeResponse(w http.ResponseWriter, code int, resp interface{}) {
@@ -15,4 +17,19 @@ func writeResponse(w http.ResponseWriter, code int, resp interface{}) {
 	w.WriteHeader(code)
 	data = append(data, '\n')
 	w.Write(data)
+}
+
+func getPostIDFromURL(url string) int {
+	idStr := strings.TrimPrefix(url, "/post/")
+
+	if idStr == "" {
+		return -1
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return -1
+	}
+
+	return id
 }

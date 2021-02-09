@@ -18,6 +18,7 @@ type Post struct {
 	Content     string     `json:"content"`
 	Likes       int        `json:"likes"`
 	Dislikes    int        `json:"dislikes"`
+	Categories  []string   `json:"categories"`
 	Comments    []*Comment `json:"comments"`
 	CreatedDate time.Time  `json:"created_date"`
 	UpdatedDate time.Time  `json:"updated_date"`

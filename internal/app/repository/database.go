@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 
-	_ "github.com/mattn/go-sqlite3"
+	sqlite "github.com/mattn/go-sqlite3"
 )
 
 // create db and tables
@@ -68,10 +68,10 @@ func createAllTables(database *sql.DB) error {
 
 	if _, err := tx.Exec(`
 	CREATE TABLE IF NOT EXISTS category_posts(
-		category_id INTEGER,
+		category_name TEXT,
 		post_id INTEGER,
 		FOREIGN KEY (post_id) REFERENCES post (id),
-		FOREIGN KEY (category_id) REFERENCES category (id)
+		FOREIGN KEY (category_name) REFERENCES category (name)
 	);`); err != nil {
 		tx.Rollback()
 		return err
@@ -79,8 +79,7 @@ func createAllTables(database *sql.DB) error {
 
 	if _, err := tx.Exec(`
 	CREATE TABLE IF NOT EXISTS category(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT UNIQUE
+		name TEXT UNIQUE PRIMARY KEY
 	);`); err != nil {
 		tx.Rollback()
 		return err
@@ -143,6 +142,39 @@ func createAllTables(database *sql.DB) error {
 	`); err != nil {
 		tx.Rollback()
 		return err
+	}
+
+	if _, err := tx.Exec(`
+	INSERT INTO category (name) 
+	VALUES (?)`, "Sport"); err != nil {
+		if sqliteErr, ok := err.(sqlite.Error); ok {
+			if sqliteErr.Code != sqlite.ErrConstraint {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	if _, err := tx.Exec(`
+	INSERT INTO category (name) 
+	VALUES (?)`, "Games"); err != nil {
+		if sqliteErr, ok := err.(sqlite.Error); ok {
+			if sqliteErr.Code != sqlite.ErrConstraint {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	if _, err := tx.Exec(`
+	INSERT INTO category (name) 
+	VALUES (?)`, "Music"); err != nil {
+		if sqliteErr, ok := err.(sqlite.Error); ok {
+			if sqliteErr.Code != sqlite.ErrConstraint {
+				tx.Rollback()
+				return err
+			}
+		}
 	}
 
 	return tx.Commit()

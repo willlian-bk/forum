@@ -42,6 +42,18 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			NeedAuth:   true,
 			OnlyUnauth: false,
 		},
+		{
+			Path:       "/post/create",
+			Handler:    h.CreatePost(),
+			NeedAuth:   true,
+			OnlyUnauth: false,
+		},
+		{
+			Path:       "/post/",
+			Handler:    h.GetPost,
+			NeedAuth:   false,
+			OnlyUnauth: false,
+		},
 	}
 
 	mux := http.NewServeMux()
