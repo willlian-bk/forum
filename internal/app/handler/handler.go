@@ -26,19 +26,19 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	routes := []route{
 		{
 			Path:       "/signup",
-			Handler:    h.SignUp(),
+			Handler:    h.SignUp,
 			NeedAuth:   false,
 			OnlyUnauth: true,
 		},
 		{
 			Path:       "/signin",
-			Handler:    h.SignIn(),
+			Handler:    h.SignIn,
 			NeedAuth:   false,
 			OnlyUnauth: true,
 		},
 		{
 			Path:       "/logout",
-			Handler:    h.LogOut(),
+			Handler:    h.LogOut,
 			NeedAuth:   true,
 			OnlyUnauth: false,
 		},
@@ -51,7 +51,6 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	})
 
 	for _, route := range routes {
-		route.Handler = h.CookiesCheckMiddleware(route.Handler)
 
 		if route.NeedAuth {
 			route.Handler = h.NeedAuthMiddleware(route.Handler)
@@ -62,6 +61,8 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			route.Handler = h.OnlyUnauthMiddleware(route.Handler)
 			fmt.Println("Unauth", route.Path)
 		}
+
+		route.Handler = h.CookiesCheckMiddleware(route.Handler)
 
 		mux.HandleFunc(route.Path, route.Handler)
 	}

@@ -83,7 +83,7 @@ func (ur *UserRepository) DeleteSession(token string) error {
 func (ur *UserRepository) GetSession(token string) (*models.Session, error) {
 	session := &models.Session{}
 	if err := ur.db.QueryRow(`
-		SELECT user_id,token,exp_time FROM user WHERE token = ?
+		SELECT user_id,token,exp_time FROM session WHERE token = ?
 	`, token).Scan(&session.UserID, &session.Token, &session.ExpTime); err != nil {
 		return nil, err
 	}
