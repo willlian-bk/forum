@@ -49,6 +49,12 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			OnlyUnauth: false,
 		},
 		{
+			Path:       "/post/rate",
+			Handler:    h.RatePost,
+			NeedAuth:   true,
+			OnlyUnauth: false,
+		},
+		{
 			Path:       "/post/",
 			Handler:    h.GetPost,
 			NeedAuth:   false,

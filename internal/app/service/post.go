@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/Akezhan1/forum/internal/app/models"
@@ -47,11 +48,41 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 		return nil, err
 	}
 
+	postCategories, err := ps.repo.GetPostsCategories(id)
+	if err != nil {
+		return nil, err
+	}
+
+	post.Categories = postCategories
+
 	return post, nil
 }
 
 func (ps *PostService) GetValidCategories() ([]string, error) {
 	return ps.repo.GetValidCategories()
+}
+
+func (ps *PostService) EstimatePost(postID, userID, types string) error {
+	if types != "like" && types != "dislike" {
+		return errors.New("Invalid Type")
+	}
+
+	postIDint, err := strconv.Atoi(postID)
+	if err != nil {
+		return err
+	}
+
+	userIDint, err := strconv.Atoi(userID)
+	if err != nil {
+		return err
+	}
+
+	post := &models.Post{
+		ID:     postIDint,
+		UserID: userIDint,
+	}
+
+	return ps.repo.EstimatePost(post, types)
 }
 
 func (ps *PostService) validateParams(post *models.Post) error {

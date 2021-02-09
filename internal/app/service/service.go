@@ -17,6 +17,7 @@ type Post interface {
 	Create(*models.Post) (int, int, error)
 	Get(int) (*models.Post, error)
 	GetValidCategories() ([]string, error)
+	EstimatePost(string, string, string) error
 }
 
 type Service struct {

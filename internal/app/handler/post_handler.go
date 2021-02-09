@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -60,7 +61,27 @@ func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
 		if post, err := h.services.Post.Get(id); err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
 		} else {
-			writeResponse(w, http.StatusOK, post)
+			tmpl := template.Must(template.ParseFiles("./web/template/view_post.html"))
+			tmpl.Execute(w, post)
 		}
+	default:
+		writeResponse(w, http.StatusBadRequest, "Bad Method")
+	}
+}
+
+func (h *Handler) RatePost(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		postID := r.FormValue("post_id")
+		userID := r.FormValue("user_id")
+		types := r.FormValue("type")
+		fmt.Println(types)
+		if err := h.services.Post.EstimatePost(postID, userID, types); err != nil {
+			writeResponse(w, http.StatusBadRequest, err.Error())
+		} else {
+			http.Redirect(w, r, "/post/"+postID, http.StatusFound)
+		}
+	default:
+		writeResponse(w, http.StatusBadRequest, "Bad Method")
 	}
 }

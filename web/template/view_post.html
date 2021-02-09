@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<body>
+    <p>{{.Title}}</p>
+    <p>{{.Content}}</p>
+    <form action="/post/rate" method="POST">
+        <input type="hidden" name="user_id" value="{{.UserID}}">
+        <input type="hidden" name="post_id" value="{{.ID}}">
+        <input type="hidden" name="type" value="like">
+        <input type="submit" value="likes: {{.Likes}}">
+    </form>
+    <form action="/post/rate" method="POST">
+        <input type="hidden" name="user_id" value="{{.UserID}}">
+        <input type="hidden" name="post_id" value="{{.ID}}">
+        <input type="hidden" name="type" value="dislike">
+        <input type="submit" value="dislikes: {{.Dislikes}}">
+    </form>
+</body>
