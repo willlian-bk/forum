@@ -42,6 +42,7 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			NeedAuth:   true,
 			OnlyUnauth: false,
 		},
+
 		{
 			Path:       "/post/create",
 			Handler:    h.CreatePost(),
@@ -60,6 +61,7 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			NeedAuth:   false,
 			OnlyUnauth: false,
 		},
+
 		{
 			Path:       "/comment/create",
 			Handler:    h.CreateComment,
