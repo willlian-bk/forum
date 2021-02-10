@@ -121,7 +121,7 @@ func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
 		posts, err := h.services.Post.Filter(field, userID)
 		if err != nil {
 			if err.Error() == "Unauthorized" {
-				writeResponse(w, http.StatusUnauthorized, err.Error())
+				http.Redirect(w, r, "/signin", http.StatusFound)
 			} else {
 				writeResponse(w, http.StatusInternalServerError, err.Error())
 			}
