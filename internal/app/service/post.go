@@ -55,6 +55,13 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 
 	post.Categories = postCategories
 
+	postComments, err := ps.repo.GetCommentsByPostID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	post.Comments = postComments
+
 	return post, nil
 }
 
@@ -62,7 +69,11 @@ func (ps *PostService) GetValidCategories() ([]string, error) {
 	return ps.repo.GetValidCategories()
 }
 
-func (ps *PostService) EstimatePost(postID, userID, types string) error {
+func (ps *PostService) GetCommentsByPostID(id int) ([]*models.Comment, error) {
+	return ps.repo.GetCommentsByPostID(id)
+}
+
+func (ps *PostService) EstimatePost(postID string, userID int, types string) error {
 	if types != "like" && types != "dislike" {
 		return errors.New("Invalid Type")
 	}
@@ -72,14 +83,9 @@ func (ps *PostService) EstimatePost(postID, userID, types string) error {
 		return err
 	}
 
-	userIDint, err := strconv.Atoi(userID)
-	if err != nil {
-		return err
-	}
-
 	post := &models.Post{
 		ID:     postIDint,
-		UserID: userIDint,
+		UserID: userID,
 	}
 
 	return ps.repo.EstimatePost(post, types)

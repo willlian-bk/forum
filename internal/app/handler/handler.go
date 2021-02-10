@@ -56,15 +56,27 @@ func (h *Handler) InitRouter() *http.ServeMux {
 		},
 		{
 			Path:       "/post/",
-			Handler:    h.GetPost,
+			Handler:    h.GetPost(),
 			NeedAuth:   false,
+			OnlyUnauth: false,
+		},
+		{
+			Path:       "/comment/create",
+			Handler:    h.CreateComment,
+			NeedAuth:   true,
+			OnlyUnauth: false,
+		},
+		{
+			Path:       "/comment/rate",
+			Handler:    h.RateComment,
+			NeedAuth:   true,
 			OnlyUnauth: false,
 		},
 	}
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello"))
 	})
 

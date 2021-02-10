@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -54,18 +53,26 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 	}
 }
 
-func (h *Handler) GetPost(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		id := getPostIDFromURL(r.URL.Path)
-		if post, err := h.services.Post.Get(id); err != nil {
-			writeResponse(w, http.StatusBadRequest, err.Error())
-		} else {
-			tmpl := template.Must(template.ParseFiles("./web/template/view_post.html"))
-			tmpl.Execute(w, post)
+func (h *Handler) GetPost() http.HandlerFunc {
+	type viewData struct {
+		Post   *models.Post
+		PostID int
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			id := getPostIDFromURL(r.URL.Path)
+			if post, err := h.services.Post.Get(id); err != nil {
+				writeResponse(w, http.StatusBadRequest, err.Error())
+			} else {
+				tmpl := template.Must(template.ParseFiles("./web/template/view_post.html"))
+				viewData := viewData{post, post.ID}
+				tmpl.Execute(w, viewData)
+			}
+		default:
+			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}
-	default:
-		writeResponse(w, http.StatusBadRequest, "Bad Method")
 	}
 }
 
@@ -73,9 +80,15 @@ func (h *Handler) RatePost(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		postID := r.FormValue("post_id")
-		userID := r.FormValue("user_id")
 		types := r.FormValue("type")
-		fmt.Println(types)
+
+		c, _ := r.Cookie("forum")
+		userID, err := h.services.User.GetUserIDByToken(c.Value)
+		if err != nil {
+			writeResponse(w, http.StatusForbidden, "Invalid Token")
+			return
+		}
+
 		if err := h.services.Post.EstimatePost(postID, userID, types); err != nil {
 			writeResponse(w, http.StatusBadRequest, err.Error())
 		} else {

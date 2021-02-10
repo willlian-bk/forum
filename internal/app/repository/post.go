@@ -52,7 +52,7 @@ func (pr *PostRepository) Create(post *models.Post) (int64, error) {
 func (pr *PostRepository) GetPostByID(id int) (*models.Post, error) {
 	post := &models.Post{}
 	if err := pr.db.QueryRow(`
-		SELECT id, user_id,title,content,likes,dislikes,created_date,updated_date FROM post WHERE id = ?
+		SELECT post.id, user_id,title,content,likes,dislikes,post.created_date,updated_date,user.username FROM post INNER JOIN user ON user_id=user.id WHERE post.id = ?
 	`, id).Scan(&post.ID,
 		&post.UserID,
 		&post.Title,
@@ -60,7 +60,8 @@ func (pr *PostRepository) GetPostByID(id int) (*models.Post, error) {
 		&post.Likes,
 		&post.Dislikes,
 		&post.CreatedDate,
-		&post.UpdatedDate); err != nil {
+		&post.UpdatedDate,
+		&post.AuthorUsername); err != nil {
 		return nil, err
 	}
 
@@ -85,6 +86,33 @@ func (pr *PostRepository) GetPostsCategories(id int) ([]string, error) {
 	}
 
 	return categories, nil
+}
+
+func (pr *PostRepository) GetCommentsByPostID(id int) ([]*models.Comment, error) {
+	comments := []*models.Comment{}
+
+	rows, err := pr.db.Query("SELECT comment.id,user_id, post_id,content,likes,dislikes,comment.created_date,user.username FROM comment INNER JOIN user ON user_id=user.id WHERE post_id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		comment := &models.Comment{}
+		if err := rows.Scan(&comment.ID,
+			&comment.UserID,
+			&comment.PostID,
+			&comment.Content,
+			&comment.Likes,
+			&comment.Dislikes,
+			&comment.CreatedDate,
+			&comment.AuthorUsername); err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
 }
 
 func (pr *PostRepository) EstimatePost(post *models.Post, types string) error {

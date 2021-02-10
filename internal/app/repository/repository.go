@@ -22,13 +22,13 @@ type Post interface {
 	Create(*models.Post) (int64, error)
 	GetPostByID(int) (*models.Post, error)
 	GetPostsCategories(int) ([]string, error)
+	GetCommentsByPostID(int) ([]*models.Comment, error)
 	EstimatePost(*models.Post, string) error
 	GetValidCategories() ([]string, error)
 }
 
 type Comment interface {
 	Create(*models.Comment) (int64, error)
-	GetCommentsByPostID(int) ([]*models.Comment, error)
 	EstimateComment(*models.Comment, string) error
 }
 
@@ -40,7 +40,8 @@ type Repository struct {
 
 func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
-		User: NewUserRepository(db),
-		Post: NewPostRepository(db),
+		User:    NewUserRepository(db),
+		Post:    NewPostRepository(db),
+		Comment: NewCommentRepository(db),
 	}
 }

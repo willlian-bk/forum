@@ -17,17 +17,25 @@ type Post interface {
 	Create(*models.Post) (int, int, error)
 	Get(int) (*models.Post, error)
 	GetValidCategories() ([]string, error)
-	EstimatePost(string, string, string) error
+	GetCommentsByPostID(int) ([]*models.Comment, error)
+	EstimatePost(string, int, string) error
+}
+
+type Comment interface {
+	Create(*models.Comment, string) (int, int, error)
+	EstimateComment(string, int, string) error
 }
 
 type Service struct {
 	User
 	Post
+	Comment
 }
 
 func NewService(r *repository.Repository) *Service {
 	return &Service{
-		User: NewUserService(r.User),
-		Post: NewPostService(r.Post),
+		User:    NewUserService(r.User),
+		Post:    NewPostService(r.Post),
+		Comment: NewCommentService(r.Comment),
 	}
 }
