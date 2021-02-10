@@ -146,6 +146,109 @@ func (pr *PostRepository) GetAll() ([]*models.Post, error) {
 	return posts, nil
 }
 
+func (pr *PostRepository) GetPostsByCategory(category string) ([]*models.Post, error) {
+	posts := []*models.Post{}
+
+	rows, err := pr.db.Query(`
+	SELECT post.id, user_id,title,content,likes,dislikes,post.created_date,updated_date,user.username 
+	FROM post 
+	INNER JOIN user ON user_id=user.id 
+	INNER JOIN category_posts ON category_posts.post_id = post.id 
+	WHERE category_posts.category_name = ?
+	`, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := &models.Post{}
+		if err := rows.Scan(&post.ID,
+			&post.UserID,
+			&post.Title,
+			&post.Content,
+			&post.Likes,
+			&post.Dislikes,
+			&post.CreatedDate,
+			&post.UpdatedDate,
+			&post.AuthorUsername); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (pr *PostRepository) GetMyCreatedPosts(id int) ([]*models.Post, error) {
+	posts := []*models.Post{}
+
+	rows, err := pr.db.Query(`
+	SELECT post.id, user_id,title,content,likes,dislikes,post.created_date,updated_date,user.username 
+	FROM post 
+	INNER JOIN user ON user_id=user.id 
+	WHERE user_id = ?
+	`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := &models.Post{}
+		if err := rows.Scan(&post.ID,
+			&post.UserID,
+			&post.Title,
+			&post.Content,
+			&post.Likes,
+			&post.Dislikes,
+			&post.CreatedDate,
+			&post.UpdatedDate,
+			&post.AuthorUsername); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func (pr *PostRepository) GetMyLikedPosts(id int) ([]*models.Post, error) {
+	posts := []*models.Post{}
+
+	rows, err := pr.db.Query(`
+	SELECT post.id,title,content,likes,dislikes,post.created_date,updated_date,user.username
+	FROM post 
+	INNER JOIN post_votes ON post_votes.post_id = post.id 
+	INNER JOIN user ON user.id = post.user_id
+	WHERE type = 'like' AND post_votes.user_id = 1
+	`, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := &models.Post{}
+		if err := rows.Scan(&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.Likes,
+			&post.Dislikes,
+			&post.CreatedDate,
+			&post.UpdatedDate,
+			&post.AuthorUsername); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func (pr *PostRepository) EstimatePost(post *models.Post, types string) error {
 	typ := ""
 

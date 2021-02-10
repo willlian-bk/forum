@@ -82,6 +82,52 @@ func (ps *PostService) GetAll() ([]*models.Post, error) {
 	return posts, nil
 }
 
+func (ps *PostService) Filter(field string, id int) ([]*models.Post, error) {
+	posts := []*models.Post{}
+	var err error
+
+	if id == 0 && (field == "Myliked" || field == "Mycreated") {
+		return nil, errors.New("Unauthorized")
+	}
+
+	if field == "Myliked" {
+		posts, err = ps.repo.GetMyLikedPosts(id)
+	} else if field == "Mycreated" {
+		posts, err = ps.repo.GetMyCreatedPosts(id)
+	} else {
+		categories, err := ps.repo.GetValidCategories()
+		if err != nil {
+			return nil, err
+		}
+
+		ok := false
+		for _, c := range categories {
+			if field == c {
+				ok = true
+			}
+		}
+		if !ok {
+			return nil, errors.New("Invalid Category")
+		}
+
+		posts, err = ps.repo.GetPostsByCategory(field)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i, post := range posts {
+		post.Categories, err = ps.repo.GetPostsCategories(post.ID)
+		if err != nil {
+			return nil, err
+		}
+		posts[i] = post
+	}
+
+	return posts, nil
+}
+
 func (ps *PostService) GetValidCategories() ([]string, error) {
 	return ps.repo.GetValidCategories()
 }

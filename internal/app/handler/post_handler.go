@@ -99,3 +99,36 @@ func (h *Handler) RatePost(w http.ResponseWriter, r *http.Request) {
 		writeResponse(w, http.StatusBadRequest, "Bad Method")
 	}
 }
+
+func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		tmpl := template.Must(template.ParseFiles("./web/template/index.html"))
+		field := getFiltersFieldFromURL(r.URL.Path)
+
+		userID := 0
+		var err error
+
+		c, _ := r.Cookie("forum")
+		if c != nil {
+			userID, err = h.services.User.GetUserIDByToken(c.Value)
+			if err != nil {
+				writeResponse(w, http.StatusForbidden, "Invalid Token")
+				return
+			}
+		}
+
+		posts, err := h.services.Post.Filter(field, userID)
+		if err != nil {
+			if err.Error() == "Unauthorized" {
+				writeResponse(w, http.StatusUnauthorized, err.Error())
+			} else {
+				writeResponse(w, http.StatusInternalServerError, err.Error())
+			}
+			return
+		}
+		tmpl.Execute(w, posts)
+	default:
+		writeResponse(w, http.StatusBadRequest, "Bad Method")
+	}
+}

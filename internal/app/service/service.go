@@ -19,6 +19,7 @@ type Post interface {
 	GetAll() ([]*models.Post, error)
 	GetValidCategories() ([]string, error)
 	GetCommentsByPostID(int) ([]*models.Comment, error)
+	Filter(string, int) ([]*models.Post, error)
 	EstimatePost(string, int, string) error
 }
 

@@ -68,6 +68,12 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			NeedAuth:   false,
 			OnlyUnauth: false,
 		},
+		{
+			Path:       "/post/filter/",
+			Handler:    h.Filter,
+			NeedAuth:   false,
+			OnlyUnauth: false,
+		},
 
 		{
 			Path:       "/comment/create",

@@ -20,12 +20,16 @@ type User interface {
 
 type Post interface {
 	Create(*models.Post) (int64, error)
-	GetPostByID(int) (*models.Post, error)
-	GetPostsCategories(int) ([]string, error)
-	GetCommentsByPostID(int) ([]*models.Comment, error)
-	EstimatePost(*models.Post, string) error
-	GetValidCategories() ([]string, error)
 	GetAll() ([]*models.Post, error)
+	GetPostByID(int) (*models.Post, error)
+	GetValidCategories() ([]string, error)
+	GetPostsCategories(int) ([]string, error)
+	GetMyCreatedPosts(int) ([]*models.Post, error)
+	GetMyLikedPosts(int) ([]*models.Post, error)
+	GetPostsByCategory(string) ([]*models.Post, error)
+	EstimatePost(*models.Post, string) error
+
+	GetCommentsByPostID(int) ([]*models.Comment, error)
 }
 
 type Comment interface {

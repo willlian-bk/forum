@@ -33,3 +33,7 @@ func getPostIDFromURL(url string) int {
 
 	return id
 }
+
+func getFiltersFieldFromURL(url string) string {
+	return strings.Title(strings.TrimPrefix(url, "/post/filter/"))
+}
