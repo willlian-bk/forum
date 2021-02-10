@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -45,7 +46,7 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 				writeResponse(w, code, err.Error())
 			} else {
 				post.ID = id
-				writeResponse(w, code, post)
+				http.Redirect(w, r, fmt.Sprintf("/post/%d", post.ID), http.StatusFound)
 			}
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")

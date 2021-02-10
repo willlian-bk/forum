@@ -25,6 +25,13 @@ func NewHandler(s *service.Service) *Handler {
 func (h *Handler) InitRouter() *http.ServeMux {
 	routes := []route{
 		{
+			Path:       "/",
+			Handler:    h.Index(),
+			NeedAuth:   false,
+			OnlyUnauth: false,
+		},
+
+		{
 			Path:       "/signup",
 			Handler:    h.SignUp,
 			NeedAuth:   false,
@@ -77,10 +84,6 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	}
 
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello"))
-	})
 
 	for _, route := range routes {
 

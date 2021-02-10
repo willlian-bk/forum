@@ -65,6 +65,23 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 	return post, nil
 }
 
+func (ps *PostService) GetAll() ([]*models.Post, error) {
+	posts, err := ps.repo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for i, post := range posts {
+		post.Categories, err = ps.repo.GetPostsCategories(post.ID)
+		if err != nil {
+			return nil, err
+		}
+		posts[i] = post
+	}
+
+	return posts, nil
+}
+
 func (ps *PostService) GetValidCategories() ([]string, error) {
 	return ps.repo.GetValidCategories()
 }

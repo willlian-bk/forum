@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+    <title>forum</title>
+</head>
+<body>
+    {{range .}}
+    <p><a href="/post/{{.ID}}">{{.Title}}</a></p>
+    <p>Author: {{.AuthorUsername}}</p>
+    <span>Categories:</span>
+    {{range .Categories}}
+    <span>{{.}}</span>
+    {{end}}
+    <br>
+    <span>Likes: {{.Likes}} </span><span>Dislikes: {{.Dislikes}}</span>
+    <hr>
+    {{end}}
+</body>

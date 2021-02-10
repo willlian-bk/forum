@@ -23,7 +23,6 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 		code, id, err := h.services.User.Create(user)
 		if err != nil {
 			writeResponse(w, code, err.Error())
-			http.Redirect(w, r, "/signup", 302)
 			return
 		}
 

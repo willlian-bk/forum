@@ -16,6 +16,7 @@ type User interface {
 type Post interface {
 	Create(*models.Post) (int, int, error)
 	Get(int) (*models.Post, error)
+	GetAll() ([]*models.Post, error)
 	GetValidCategories() ([]string, error)
 	GetCommentsByPostID(int) ([]*models.Comment, error)
 	EstimatePost(string, int, string) error

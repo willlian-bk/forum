@@ -115,6 +115,37 @@ func (pr *PostRepository) GetCommentsByPostID(id int) ([]*models.Comment, error)
 	return comments, nil
 }
 
+func (pr *PostRepository) GetAll() ([]*models.Post, error) {
+	posts := []*models.Post{}
+
+	rows, err := pr.db.Query(`
+		SELECT post.id, user_id,title,content,likes,dislikes,post.created_date,updated_date,user.username FROM post INNER JOIN user ON user_id=user.id
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := &models.Post{}
+		if err := rows.Scan(&post.ID,
+			&post.UserID,
+			&post.Title,
+			&post.Content,
+			&post.Likes,
+			&post.Dislikes,
+			&post.CreatedDate,
+			&post.UpdatedDate,
+			&post.AuthorUsername); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func (pr *PostRepository) EstimatePost(post *models.Post, types string) error {
 	typ := ""
 
