@@ -9,6 +9,10 @@ func (h *Handler) Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
+			if r.URL.Path != "/" {
+				writeResponse(w, http.StatusNotFound, "Page Not Found")
+				return
+			}
 			tmpl := template.Must(template.ParseFiles("./web/template/index.html"))
 			posts, err := h.services.Post.GetAll()
 			if err != nil {

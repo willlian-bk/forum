@@ -28,7 +28,7 @@ func (h *Handler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 		user.ID = id
 
-		writeResponse(w, code, user)
+		http.Redirect(w, r, "/signin", http.StatusFound)
 	default:
 		writeResponse(w, http.StatusBadRequest, "Bad Method")
 	}
@@ -53,7 +53,7 @@ func (h *Handler) SignIn(w http.ResponseWriter, r *http.Request) {
 				Value:   session.Token,
 				Expires: session.ExpTime,
 			})
-			writeResponse(w, http.StatusOK, "OK")
+			http.Redirect(w, r, "/", http.StatusFound)
 		}
 	default:
 		writeResponse(w, http.StatusBadRequest, "Bad Method")
@@ -74,7 +74,7 @@ func (h *Handler) LogOut(w http.ResponseWriter, r *http.Request) {
 		} else {
 			cookie.MaxAge = -1
 			http.SetCookie(w, cookie)
-			writeResponse(w, http.StatusOK, "OK")
+			http.Redirect(w, r, "/", http.StatusFound)
 		}
 	default:
 		writeResponse(w, http.StatusBadRequest, "Bad Method")

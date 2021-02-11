@@ -23,6 +23,7 @@ type Post struct {
 	CreatedDate    time.Time  `json:"created_date"`
 	UpdatedDate    time.Time  `json:"updated_date"`
 	AuthorUsername string
+	FormatTime     string
 }
 
 type Comment struct {
@@ -35,6 +36,7 @@ type Comment struct {
 	CreatedDate    time.Time `json:"created_date"`
 	UpdatedDate    time.Time `json:"updated_date"`
 	AuthorUsername string
+	FormatTime     string
 }
 
 type Category struct {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <head>
     <title>forum</title>
 </head>
@@ -6,6 +6,7 @@
     <p>{{.Post.Title}}</p>
     <p>{{.Post.Content}}</p>
     <p>Author: {{.Post.AuthorUsername}}</p>
+    <p>{{.Post.FormatTime}}</p>
     <form action="/post/rate" method="POST">
         <input type="hidden" name="post_id" value="{{.PostID}}">
         <input type="hidden" name="type" value="like">
@@ -37,4 +38,46 @@
         <textarea name="content"></textarea><br>
         <input type="submit" value="comment">
     </form>
+</body> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>FORUM</title>
+<link href='http://fonts.googleapis.com/css?family=Archivo+Narrow:400,700|Open+Sans:400,300' rel='stylesheet' type='text/css' />
+<link href="../static/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<div id="wrapper">
+	<div id="page">
+		<div id="content">
+			<div class="post">
+				<h2 class="title">{{.Post.Title}}</h2>
+				<p class="meta"><span class="date">{{.Post.FormatTime}}</span><span class="posted">Posted by {{.Post.AuthorUsername}}</span></p>
+				<div style="clear: both;">&nbsp;</div>
+				<div class="entry">
+					<p>{{.Post.Content}}</p>
+				</div>
+			</div>
+            <div style="clear: both;">&nbsp;</div>
+            {{range $comment := .Post.Comments}}
+            <div class="comment">
+                <p class="meta"><span class="date">{{$comment.AuthorUsername}}:</span></p>
+                <div style="clear: both;">&nbsp;</div>
+                <div class="entry">
+                    <p>{{$comment.Content}}</p>
+                </div>
+            </div>
+            <div style="clear: both;">&nbsp;</div>
+            {{end}}
+        </div>
+        <form action="/comment/create" method="POST">
+            <input type="hidden" name="post_id" value="{{.PostID}}">
+            <textarea name="content"></textarea><br>
+            <input type="submit" value="comment">
+        </form>
+	</div>
+</div>
 </body>
+</html>

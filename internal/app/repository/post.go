@@ -223,7 +223,7 @@ func (pr *PostRepository) GetMyLikedPosts(id int) ([]*models.Post, error) {
 	FROM post 
 	INNER JOIN post_votes ON post_votes.post_id = post.id 
 	INNER JOIN user ON user.id = post.user_id
-	WHERE type = 'like' AND post_votes.user_id = 1
+	WHERE type = 'like' AND post_votes.user_id = ?
 	`, id)
 	if err != nil {
 		return nil, err

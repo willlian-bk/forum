@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"strconv"
 	"time"
 
@@ -61,6 +62,7 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 	}
 
 	post.Comments = postComments
+	post.FormatTime = post.UpdatedDate.Format("January 02, 2006")
 
 	return post, nil
 }
@@ -72,6 +74,7 @@ func (ps *PostService) GetAll() ([]*models.Post, error) {
 	}
 
 	for i, post := range posts {
+		post.FormatTime = post.UpdatedDate.Format("January 02, 2006")
 		post.Categories, err = ps.repo.GetPostsCategories(post.ID)
 		if err != nil {
 			return nil, err
@@ -118,6 +121,7 @@ func (ps *PostService) Filter(field string, id int) ([]*models.Post, error) {
 	}
 
 	for i, post := range posts {
+		post.FormatTime = post.UpdatedDate.Format("January 02, 2006")
 		post.Categories, err = ps.repo.GetPostsCategories(post.ID)
 		if err != nil {
 			return nil, err
@@ -133,7 +137,17 @@ func (ps *PostService) GetValidCategories() ([]string, error) {
 }
 
 func (ps *PostService) GetCommentsByPostID(id int) ([]*models.Comment, error) {
-	return ps.repo.GetCommentsByPostID(id)
+	comments, err := ps.repo.GetCommentsByPostID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range comments {
+		comments[i].FormatTime = comments[i].UpdatedDate.Format("January 02, 2006")
+		log.Println(comments[i].FormatTime)
+	}
+
+	return comments, nil
 }
 
 func (ps *PostService) EstimatePost(postID string, userID int, types string) error {

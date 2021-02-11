@@ -69,7 +69,7 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			OnlyUnauth: false,
 		},
 		{
-			Path:       "/post/filter/",
+			Path:       "/filter/",
 			Handler:    h.Filter,
 			NeedAuth:   false,
 			OnlyUnauth: false,
@@ -107,6 +107,14 @@ func (h *Handler) InitRouter() *http.ServeMux {
 
 		mux.HandleFunc(route.Path, route.Handler)
 	}
+
+	fileServer := http.FileServer(http.Dir("./web/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+	//mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./web/static"))))
+	//mux.Handle("/static/", http.StripPrefix("/post/", http.FileServer(http.Dir("./web/static"))))
+
+	//http.Handle("/", http.FileServer(http.Dir("./web/static")))
 
 	return mux
 }
