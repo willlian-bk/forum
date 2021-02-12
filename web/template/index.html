@@ -19,6 +19,7 @@
 						<div class="dropdown">
 							<span>Filter</span>
 							<div class="dropdown-content">
+								<p><a href="/">All</a></p>
 								{{range .ValidCategories}}
 								<p><a href="/filter/{{.}}">{{.}}</a></p>
 								{{end}}
@@ -50,7 +51,12 @@
 				<div class="entry">
                     <p>{{.Content}}</p>
 					<p class="links"><a href="/post/{{.ID}}" class="more">Read More</a></p>
-                </div>
+				</div>
+				<p>
+				{{range .Categories}}
+				<span><a href="/filter/{{.}}">#{{.}}</a></span>
+				{{end}}
+				</p>
                 <p><span>Likes:{{.Likes}}</span> <span>Dislikes:{{.Dislikes}}</span></p>
 			</div>
 			{{end}}
