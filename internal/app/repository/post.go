@@ -88,6 +88,43 @@ func (pr *PostRepository) GetPostsCategories(id int) ([]string, error) {
 	return categories, nil
 }
 
+func (pr *PostRepository) CreateImage(id int, path string) error {
+	tx, err := pr.db.Begin()
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec(`
+	INSERT INTO post_images (post_id,path) 
+	VALUES (?,?)`, id, path)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+}
+
+func (pr *PostRepository) GetPostsImages(id int) ([]string, error) {
+	paths := []string{}
+
+	rows, err := pr.db.Query("SELECT path FROM post_images WHERE post_id = ?", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		path := ""
+		if err := rows.Scan(&path); err != nil {
+			return nil, err
+		}
+		paths = append(paths, path)
+	}
+
+	return paths, nil
+}
+
 func (pr *PostRepository) GetCommentsByPostID(id int) ([]*models.Comment, error) {
 	comments := []*models.Comment{}
 

@@ -17,13 +17,14 @@
     </div>
 	<div id="page">
 		<div id="content">
-			<form action="/post/create" method="POST">
+			<form action="/post/create" enctype="multipart/form-data" method="POST">
                 <input type="text" name="title" placeholder="title"><br>
                 {{ range .Categories }}
                 <input type="checkbox" name="categories" value="{{.}}" style="width: unset;">{{.}}
                 {{ end }}<br>
                 <textarea name="content" placeholder="content..."></textarea><br>
-                <input type="submit" class="links more" style="float:none; display: inline">
+                <input type="file" name="files" multiple>
+                <input type="submit" class="links more" value="create post" style="float:none; display: inline">
             </form>
         </div>
         <div style="clear: both;">&nbsp;</div>

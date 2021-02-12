@@ -24,6 +24,7 @@ type Post struct {
 	UpdatedDate    time.Time  `json:"updated_date"`
 	AuthorUsername string
 	FormatTime     string
+	Images         []string
 }
 
 type Comment struct {

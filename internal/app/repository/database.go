@@ -145,6 +145,17 @@ func createAllTables(database *sql.DB) error {
 	}
 
 	if _, err := tx.Exec(`
+	CREATE TABLE IF NOT EXISTS post_images(
+		post_id INTEGER,
+		path TEXT,
+		FOREIGN KEY (post_id) REFERENCES post (id)
+	);
+	`); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if _, err := tx.Exec(`
 	INSERT INTO category (name) 
 	VALUES (?)`, "Sport"); err != nil {
 		if sqliteErr, ok := err.(sqlite.Error); ok {

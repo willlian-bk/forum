@@ -21,6 +21,7 @@ type Post interface {
 	GetCommentsByPostID(int) ([]*models.Comment, error)
 	Filter(string, int) ([]*models.Post, error)
 	EstimatePost(string, int, string) error
+	SetImage(int, string) error
 }
 
 type Comment interface {

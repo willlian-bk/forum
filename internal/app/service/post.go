@@ -65,6 +65,12 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 		postComments[i].FormatTime = postComments[i].UpdatedDate.Format("January 02, 2006")
 	}
 
+	postImages, err := ps.repo.GetPostsImages(id)
+	if err != nil {
+		return nil, err
+	}
+
+	post.Images = postImages
 	post.Comments = postComments
 	post.FormatTime = post.UpdatedDate.Format("January 02, 2006")
 
@@ -140,6 +146,10 @@ func (ps *PostService) Filter(field string, id int) ([]*models.Post, error) {
 
 func (ps *PostService) GetValidCategories() ([]string, error) {
 	return ps.repo.GetValidCategories()
+}
+
+func (ps *PostService) SetImage(id int, path string) error {
+	return ps.repo.CreateImage(id, path)
 }
 
 func (ps *PostService) GetCommentsByPostID(id int) ([]*models.Comment, error) {

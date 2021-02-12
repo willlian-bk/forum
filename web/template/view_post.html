@@ -34,7 +34,12 @@
 				<p class="meta"><span class="date">{{.Post.FormatTime}}</span><span class="posted">Posted by {{.Post.AuthorUsername}}</span></p>
 				<div style="clear: both;">&nbsp;</div>
 				<div class="entry">
-					<div style="white-space: pre-wrap; word-wrap: break-word;">{{.Post.Content}}</div>
+                    <div style="white-space: pre-wrap; word-wrap: break-word;">{{.Post.Content}}</div>
+                    {{range .Post.Images}}
+                    <a href="{{.}}">
+                        <img src="{{.}}" width="350" height="350" style="white-space: pre-wrap; word-wrap: break-word;">
+                    </a>
+                    {{end}}
                 </div>
                 <form action="/post/rate" method="POST">
                     <input type="hidden" name="post_id" value="{{.PostID}}">

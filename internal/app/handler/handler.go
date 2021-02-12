@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Akezhan1/forum/internal/app/service"
@@ -90,26 +89,26 @@ func (h *Handler) InitRouter() *http.ServeMux {
 	}
 
 	mux := http.NewServeMux()
+	fileServer := http.FileServer(http.Dir("./web/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+	images := http.FileServer(http.Dir("./assets/images"))
+	mux.Handle("/images/", http.StripPrefix("/images/", images))
 
 	for _, route := range routes {
 
 		if route.NeedAuth {
 			route.Handler = h.NeedAuthMiddleware(route.Handler)
-			fmt.Println("Auth", route.Path)
 		}
 
 		if route.OnlyUnauth {
 			route.Handler = h.OnlyUnauthMiddleware(route.Handler)
-			fmt.Println("Unauth", route.Path)
 		}
 
 		route.Handler = h.CookiesCheckMiddleware(route.Handler)
 
 		mux.HandleFunc(route.Path, route.Handler)
 	}
-
-	fileServer := http.FileServer(http.Dir("./web/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
 	//mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./web/static"))))
 	//mux.Handle("/static/", http.StripPrefix("/post/", http.FileServer(http.Dir("./web/static"))))

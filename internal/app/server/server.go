@@ -33,7 +33,7 @@ func New(config *Config) *Server {
 }
 
 func (s *Server) Start() error {
-	log.Println("starting api server")
+	log.Println("starting api server at", s.httpServer.Addr)
 
 	return s.httpServer.ListenAndServe()
 }

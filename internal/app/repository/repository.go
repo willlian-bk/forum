@@ -28,6 +28,8 @@ type Post interface {
 	GetMyLikedPosts(int) ([]*models.Post, error)
 	GetPostsByCategory(string) ([]*models.Post, error)
 	EstimatePost(*models.Post, string) error
+	CreateImage(int, string) error
+	GetPostsImages(int) ([]string, error)
 
 	GetCommentsByPostID(int) ([]*models.Comment, error)
 }

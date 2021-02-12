@@ -236,7 +236,6 @@ a {
 	padding: 0px 0px 40px 0px;
 	text-align: justify;
 	text-overflow: ellipsis;
-	white-space: nowrap;
 	overflow: hidden;
 }
 
