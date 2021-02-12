@@ -142,11 +142,6 @@ a {
 	color: #FFFFFF;
 }
 
-input[type=text] {
-	border: none;
-	border-bottom: 1px solid #1F1F1F;
-}
-
 .dropdown {
 	position: none;
 	display: inline-block;
