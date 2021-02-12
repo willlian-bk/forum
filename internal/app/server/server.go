@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Akezhan1/forum/internal/app/repository"
 	"github.com/Akezhan1/forum/internal/app/service"
@@ -24,9 +25,14 @@ func New(config *Config) *Server {
 	services := service.NewService(repos)
 	handler := handler.NewHandler(services)
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = config.Addr
+	}
+
 	return &Server{
 		httpServer: &http.Server{
-			Addr:    config.Addr,
+			Addr:    port,
 			Handler: handler.InitRouter(),
 		},
 	}
