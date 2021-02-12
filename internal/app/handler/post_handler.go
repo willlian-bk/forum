@@ -100,10 +100,10 @@ func (h *Handler) RatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Filter() http.HandlerFunc {
-	type viewData struct {
-		Post     *models.Post
-		PostID   int
-		LoggedIn bool
+	type templateData struct {
+		Posts           []*models.Post
+		LoggedIn        bool
+		ValidCategories []string
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +133,14 @@ func (h *Handler) Filter() http.HandlerFunc {
 				}
 				return
 			}
-			tmpl.Execute(w, posts)
+
+			validcategories, err := h.services.Post.GetValidCategories()
+			if err != nil {
+				writeResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			tmpl.Execute(w, templateData{posts, true, validcategories})
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}

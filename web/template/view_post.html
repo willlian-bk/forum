@@ -47,6 +47,7 @@
 <title>FORUM</title>
 <link href='http://fonts.googleapis.com/css?family=Archivo+Narrow:400,700|Open+Sans:400,300' rel='stylesheet' type='text/css' />
 <link href="../static/style.css" rel="stylesheet" type="text/css"/>
+<link href='https://css.gg/chevron-up.css' rel='stylesheet'>
 </head>
 <body>
 <div id="wrapper">
@@ -76,7 +77,17 @@
 				<div style="clear: both;">&nbsp;</div>
 				<div class="entry">
 					<div style="white-space: pre-wrap; word-wrap: break-word;">{{.Post.Content}}</div>
-				</div>
+                </div>
+                <form action="/post/rate" method="POST">
+                    <input type="hidden" name="post_id" value="{{.PostID}}">
+                    <input type="hidden" name="type" value="dislike">
+                    <input type="submit" value="dislikes: {{.Post.Dislikes}}" class="links more" style="width: 100px; float: right;">
+                </form>
+                <form action="/post/rate" method="POST">
+                    <input type="hidden" name="post_id" value="{{.PostID}}">
+                    <input type="hidden" name="type" value="like">
+                    <input type="submit" value="likes: {{.Post.Likes}}" class="links more" style="width: 100px; float: right;">
+                </form>
 			</div>
             {{range $comment := .Post.Comments}}
             <div class="comment">
@@ -86,6 +97,18 @@
                 <div class="entry">
                     <div style="white-space: pre-wrap; word-wrap: break-word;">{{$comment.Content}}</div>
                 </div>
+                <form action="/comment/rate" method="POST">
+                    <input type="hidden" name="post_id" value="{{.PostID}}">
+                    <input type="hidden" name="comment_id" value="{{$comment.ID}}">
+                    <input type="hidden" name="type" value="dislike">
+                    <input type="submit" value="dislikes: {{.Dislikes}}" class="links more" style="width: 100px; float: right;">
+                </form>
+                <form action="/comment/rate" method="POST">
+                    <input type="hidden" name="post_id" value="{{.PostID}}">
+                    <input type="hidden" name="comment_id" value="{{$comment.ID}}">
+                    <input type="hidden" name="type" value="like">
+                    <input type="submit" value="likes: {{.Likes}}" class="links more" style="width: 100px; float: right;">
+                </form>
             </div>
             {{end}}
             <div style="clear: both;">&nbsp;</div>

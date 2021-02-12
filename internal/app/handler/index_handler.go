@@ -9,8 +9,9 @@ import (
 
 func (h *Handler) Index() http.HandlerFunc {
 	type templateData struct {
-		Posts    []*models.Post
-		LoggedIn bool
+		Posts           []*models.Post
+		LoggedIn        bool
+		ValidCategories []string
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -27,9 +28,15 @@ func (h *Handler) Index() http.HandlerFunc {
 				return
 			}
 
+			validcategories, err := h.services.Post.GetValidCategories()
+			if err != nil {
+				writeResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
 			ok := IsLoggedUser(r)
 
-			tmpl.Execute(w, templateData{posts, ok})
+			tmpl.Execute(w, templateData{posts, ok, validcategories})
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}

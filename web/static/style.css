@@ -102,7 +102,7 @@ a {
 
 #menu {
 	float: right;
-	width: 500px;
+	width: 700px;
 	height: 90px;
 	margin: 0 auto;
 	padding: 0;
@@ -140,6 +140,26 @@ a {
 	border-radius: 8px;
 	text-decoration: none;
 	color: #FFFFFF;
+}
+
+input[type=text] {
+	border: none;
+	border-bottom: 1px solid #1F1F1F;
+}
+
+.dropdown {
+	position: none;
+	display: inline-block;
+}
+  
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #FFFFFF;
+}
+  
+.dropdown:hover .dropdown-content {
+	display: block;
 }
 
 /* Page */

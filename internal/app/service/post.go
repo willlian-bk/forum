@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Akezhan1/forum/internal/app/models"
@@ -105,6 +106,8 @@ func (ps *PostService) Filter(field string, id int) ([]*models.Post, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		field = strings.Title(strings.ToLower(field))
 
 		ok := false
 		for _, c := range categories {
