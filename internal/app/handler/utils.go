@@ -37,3 +37,11 @@ func getPostIDFromURL(url string) int {
 func getFiltersFieldFromURL(url string) string {
 	return strings.Title(strings.TrimPrefix(url, "/filter/"))
 }
+
+func IsLoggedUser(r *http.Request) bool {
+	c, _ := r.Cookie("forum")
+	if c != nil {
+		return true
+	}
+	return false
+}

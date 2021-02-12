@@ -3,9 +3,16 @@ package handler
 import (
 	"html/template"
 	"net/http"
+
+	"github.com/Akezhan1/forum/internal/app/models"
 )
 
 func (h *Handler) Index() http.HandlerFunc {
+	type templateData struct {
+		Posts    []*models.Post
+		LoggedIn bool
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -19,7 +26,10 @@ func (h *Handler) Index() http.HandlerFunc {
 				writeResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
-			tmpl.Execute(w, posts)
+
+			ok := IsLoggedUser(r)
+
+			tmpl.Execute(w, templateData{posts, ok})
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}

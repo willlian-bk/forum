@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"log"
 	"strconv"
 	"time"
 
@@ -59,6 +58,10 @@ func (ps *PostService) Get(id int) (*models.Post, error) {
 	postComments, err := ps.repo.GetCommentsByPostID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	for i := range postComments {
+		postComments[i].FormatTime = postComments[i].UpdatedDate.Format("January 02, 2006")
 	}
 
 	post.Comments = postComments
@@ -140,11 +143,6 @@ func (ps *PostService) GetCommentsByPostID(id int) ([]*models.Comment, error) {
 	comments, err := ps.repo.GetCommentsByPostID(id)
 	if err != nil {
 		return nil, err
-	}
-
-	for i := range comments {
-		comments[i].FormatTime = comments[i].UpdatedDate.Format("January 02, 2006")
-		log.Println(comments[i].FormatTime)
 	}
 
 	return comments, nil

@@ -70,7 +70,7 @@ func (h *Handler) InitRouter() *http.ServeMux {
 		},
 		{
 			Path:       "/filter/",
-			Handler:    h.Filter,
+			Handler:    h.Filter(),
 			NeedAuth:   false,
 			OnlyUnauth: false,
 		},

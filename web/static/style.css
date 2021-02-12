@@ -32,7 +32,7 @@ h3 {
 
 p, ul, ol {
 	margin-top: 0;
-	line-height: 180%;
+	line-height: 100%;
 }
 
 a {
@@ -158,6 +158,28 @@ a {
 	padding: 0px 0px 0px 0px;
 }
 
+#content form {
+	text-align: center;
+}
+
+#content form input {
+	width: 50%;
+	padding: 12px 20px;
+  	margin: 8px 0;
+  	box-sizing: border-box;
+}
+
+#content textarea {
+	width: 50%;
+	height: 150px;
+	padding: 12px 20px;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	background-color: #FFF;
+	resize: none;
+}
+
 .post, .comment {
 	overflow: hidden;
 	padding: 50px 50px 30px 50px;
@@ -194,12 +216,13 @@ a {
 	float: right;
 }
 
-.post .meta a {
-}
-
 .post .entry, .comment .entry {
+	width: 100%;  
 	padding: 0px 0px 40px 0px;
 	text-align: justify;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .links {

@@ -13,8 +13,6 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 		Categories []string
 	}
 
-	var data viewData
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -22,8 +20,7 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 			if categories, err := h.services.Post.GetValidCategories(); err != nil {
 				writeResponse(w, http.StatusInternalServerError, err.Error())
 			} else {
-				data.Categories = categories
-				tmpl.Execute(w, data)
+				tmpl.Execute(w, viewData{categories})
 			}
 		case "POST":
 			c, _ := r.Cookie("forum")
@@ -56,8 +53,9 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 
 func (h *Handler) GetPost() http.HandlerFunc {
 	type viewData struct {
-		Post   *models.Post
-		PostID int
+		Post     *models.Post
+		PostID   int
+		LoggedIn bool
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +66,8 @@ func (h *Handler) GetPost() http.HandlerFunc {
 				writeResponse(w, http.StatusBadRequest, err.Error())
 			} else {
 				tmpl := template.Must(template.ParseFiles("./web/template/view_post.html"))
-				viewData := viewData{post, post.ID}
+				ok := IsLoggedUser(r)
+				viewData := viewData{post, post.ID, ok}
 				tmpl.Execute(w, viewData)
 			}
 		default:
@@ -100,35 +99,43 @@ func (h *Handler) RatePost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) Filter(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		tmpl := template.Must(template.ParseFiles("./web/template/index.html"))
-		field := getFiltersFieldFromURL(r.URL.Path)
+func (h *Handler) Filter() http.HandlerFunc {
+	type viewData struct {
+		Post     *models.Post
+		PostID   int
+		LoggedIn bool
+	}
 
-		userID := 0
-		var err error
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			tmpl := template.Must(template.ParseFiles("./web/template/index.html"))
+			field := getFiltersFieldFromURL(r.URL.Path)
 
-		c, _ := r.Cookie("forum")
-		if c != nil {
-			userID, err = h.services.User.GetUserIDByToken(c.Value)
+			userID := 0
+			var err error
+
+			c, _ := r.Cookie("forum")
+			if c != nil {
+				userID, err = h.services.User.GetUserIDByToken(c.Value)
+				if err != nil {
+					writeResponse(w, http.StatusForbidden, "Invalid Token")
+					return
+				}
+			}
+
+			posts, err := h.services.Post.Filter(field, userID)
 			if err != nil {
-				writeResponse(w, http.StatusForbidden, "Invalid Token")
+				if err.Error() == "Unauthorized" {
+					http.Redirect(w, r, "/signin", http.StatusFound)
+				} else {
+					writeResponse(w, http.StatusInternalServerError, err.Error())
+				}
 				return
 			}
+			tmpl.Execute(w, posts)
+		default:
+			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}
-
-		posts, err := h.services.Post.Filter(field, userID)
-		if err != nil {
-			if err.Error() == "Unauthorized" {
-				http.Redirect(w, r, "/signin", http.StatusFound)
-			} else {
-				writeResponse(w, http.StatusInternalServerError, err.Error())
-			}
-			return
-		}
-		tmpl.Execute(w, posts)
-	default:
-		writeResponse(w, http.StatusBadRequest, "Bad Method")
 	}
 }

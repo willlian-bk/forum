@@ -50,6 +50,24 @@
 </head>
 <body>
 <div id="wrapper">
+    <div id="header-wrapper">
+        <div id="header" class="container">
+            <div id="logo">
+                <h1><a href="/">forum </a></h1>
+            </div>
+            <div id="menu">
+				<ul>
+					{{if .LoggedIn}}
+					<li><a href="/post/create">Create Post</a></li>
+					<li><a href="/logout">Log Out</a></li>
+					{{else}}
+					<li><a href="/signin">Sign In</a></li>
+					<li><a href="/signup">Sign Up</a></li>
+					{{end}}
+				</ul>
+			</div>
+        </div>
+    </div>
 	<div id="page">
 		<div id="content">
 			<div class="post">
@@ -57,26 +75,28 @@
 				<p class="meta"><span class="date">{{.Post.FormatTime}}</span><span class="posted">Posted by {{.Post.AuthorUsername}}</span></p>
 				<div style="clear: both;">&nbsp;</div>
 				<div class="entry">
-					<p>{{.Post.Content}}</p>
+					<div style="white-space: pre-wrap; word-wrap: break-word;">{{.Post.Content}}</div>
 				</div>
 			</div>
-            <div style="clear: both;">&nbsp;</div>
             {{range $comment := .Post.Comments}}
             <div class="comment">
-                <p class="meta"><span class="date">{{$comment.AuthorUsername}}:</span></p>
+                <p class="meta"><span class="date"><h4>{{$comment.AuthorUsername}}:</h4></span></p>
+                <p class="meta"><span class="date">{{$comment.FormatTime}}</span></p>
                 <div style="clear: both;">&nbsp;</div>
                 <div class="entry">
-                    <p>{{$comment.Content}}</p>
+                    <div style="white-space: pre-wrap; word-wrap: break-word;">{{$comment.Content}}</div>
                 </div>
             </div>
+            {{end}}
             <div style="clear: both;">&nbsp;</div>
+            {{if .LoggedIn}}
+            <form action="/comment/create" method="POST">
+                <input type="hidden" name="post_id" value="{{.PostID}}">
+                <textarea name="content" placeholder="comment..."></textarea><br>
+                <input type="submit" value="comment" class="links more" style="float:none; display: inline">
+            </form>
             {{end}}
         </div>
-        <form action="/comment/create" method="POST">
-            <input type="hidden" name="post_id" value="{{.PostID}}">
-            <textarea name="content"></textarea><br>
-            <input type="submit" value="comment">
-        </form>
 	</div>
 </div>
 </body>

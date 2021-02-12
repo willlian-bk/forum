@@ -91,7 +91,7 @@ func (pr *PostRepository) GetPostsCategories(id int) ([]string, error) {
 func (pr *PostRepository) GetCommentsByPostID(id int) ([]*models.Comment, error) {
 	comments := []*models.Comment{}
 
-	rows, err := pr.db.Query("SELECT comment.id,user_id, post_id,content,likes,dislikes,comment.created_date,user.username FROM comment INNER JOIN user ON user_id=user.id WHERE post_id = ?", id)
+	rows, err := pr.db.Query("SELECT comment.id,user_id, post_id,content,likes,dislikes,comment.updated_date,user.username FROM comment INNER JOIN user ON user_id=user.id WHERE post_id = ?", id)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (pr *PostRepository) GetCommentsByPostID(id int) ([]*models.Comment, error)
 			&comment.Content,
 			&comment.Likes,
 			&comment.Dislikes,
-			&comment.CreatedDate,
+			&comment.UpdatedDate,
 			&comment.AuthorUsername); err != nil {
 			return nil, err
 		}

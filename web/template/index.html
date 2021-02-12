@@ -15,15 +15,20 @@
 			</div>
 			<div id="menu">
 				<ul>
+					{{if .LoggedIn}}
+					<li><a href="/post/create">Create Post</a></li>
+					<li><a href="/logout">Log Out</a></li>
+					{{else}}
 					<li><a href="/signin">Sign In</a></li>
 					<li><a href="/signup">Sign Up</a></li>
+					{{end}}
 				</ul>
 			</div>
 		</div>
 	</div>
 	<div id="page">
 		<div id="content">
-			{{range .}}
+			{{range .Posts}}
 			<div class="post">
                 <h2 class="title">{{.Title}}</h2>
 				<p class="meta"><span class="date">{{.FormatTime}}</span><span class="posted">Posted by {{.AuthorUsername}}</span></p>
@@ -34,7 +39,6 @@
                 </div>
                 <p><span>Likes:{{.Likes}}</span> <span>Dislikes:{{.Dislikes}}</span></p>
 			</div>
-			<div style="clear: both;">&nbsp;</div>
 			{{end}}
 		</div>
 		<div style="clear: both;">&nbsp;</div>
