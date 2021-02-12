@@ -140,7 +140,9 @@ func (h *Handler) Filter() http.HandlerFunc {
 				return
 			}
 
-			tmpl.Execute(w, templateData{posts, true, validcategories})
+			ok := IsLoggedUser(r)
+
+			tmpl.Execute(w, templateData{posts, ok, validcategories})
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")
 		}
