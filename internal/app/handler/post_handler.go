@@ -54,6 +54,8 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 			formdata := r.MultipartForm
 			files := formdata.File["files"]
 
+			created := false
+
 			for i := range files {
 				file, err := files[i].Open()
 				if err != nil {
@@ -98,12 +100,16 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 					return
 				}
 
-				code, id, err := h.services.Post.Create(post)
-				if err != nil {
-					writeResponse(w, code, err.Error())
-					return
+				if !created {
+					code, id, err := h.services.Post.Create(post)
+					if err != nil {
+						writeResponse(w, code, err.Error())
+						return
+					}
+
+					created = true
+					post.ID = id
 				}
-				post.ID = id
 
 				if err := h.services.Post.SetImage(post.ID, destImage); err != nil {
 					writeResponse(w, http.StatusInternalServerError, err.Error())
