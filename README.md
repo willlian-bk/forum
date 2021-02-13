@@ -4,6 +4,8 @@
 
 ```go
 go run cmd/app/main.go
+OR
+make && ./forum
 ``` 
 **To run in Docker:**
 
