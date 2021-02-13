@@ -43,6 +43,7 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 			}
 
 			r.ParseForm()
+
 			post := &models.Post{
 				UserID:     userID,
 				Title:      r.FormValue("title"),
@@ -50,20 +51,13 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 				Categories: r.Form["categories"],
 			}
 
-			code, id, err := h.services.Post.Create(post)
-			if err != nil {
-				writeResponse(w, code, err.Error())
-				return
-			}
-			post.ID = id
-
 			formdata := r.MultipartForm
 			files := formdata.File["files"]
 
 			for i := range files {
 				file, err := files[i].Open()
 				if err != nil {
-					writeResponse(w, code, err.Error())
+					writeResponse(w, 500, err.Error())
 					return
 				}
 
@@ -103,6 +97,13 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 					writeResponse(w, http.StatusInternalServerError, err.Error())
 					return
 				}
+
+				code, id, err := h.services.Post.Create(post)
+				if err != nil {
+					writeResponse(w, code, err.Error())
+					return
+				}
+				post.ID = id
 
 				if err := h.services.Post.SetImage(post.ID, destImage); err != nil {
 					writeResponse(w, http.StatusInternalServerError, err.Error())

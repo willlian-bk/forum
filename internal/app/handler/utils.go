@@ -1,22 +1,20 @@
 package handler
 
 import (
-	"encoding/json"
+	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
+type errorData struct {
+	Data interface{}
+}
+
 func writeResponse(w http.ResponseWriter, code int, resp interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	data, err := json.Marshal(resp)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
 	w.WriteHeader(code)
-	data = append(data, '\n')
-	w.Write(data)
+	tmpl := template.Must(template.ParseFiles("./web/template/error.html"))
+	tmpl.Execute(w, errorData{resp})
 }
 
 func getPostIDFromURL(url string) int {
