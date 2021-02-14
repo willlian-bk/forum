@@ -123,8 +123,6 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 					writeResponse(w, code, err.Error())
 					return
 				}
-
-				created = true
 				post.ID = id
 			}
 
