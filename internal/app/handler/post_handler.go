@@ -117,6 +117,17 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 				}
 			}
 
+			if !created {
+				code, id, err := h.services.Post.Create(post)
+				if err != nil {
+					writeResponse(w, code, err.Error())
+					return
+				}
+
+				created = true
+				post.ID = id
+			}
+
 			http.Redirect(w, r, fmt.Sprintf("/post/%d", post.ID), http.StatusFound)
 		default:
 			writeResponse(w, http.StatusBadRequest, "Bad Method")
