@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Akezhan1/forum/internal/app/repository"
 	"github.com/Akezhan1/forum/internal/app/service"
@@ -32,8 +33,10 @@ func New(config *Config) *Server {
 
 	return &Server{
 		httpServer: &http.Server{
-			Addr:    port,
-			Handler: handler.InitRouter(),
+			Addr:         port,
+			Handler:      handler.InitRouter(),
+			WriteTimeout: 10 * time.Second,
+			ReadTimeout:  10 * time.Second,
 		},
 	}
 }
