@@ -110,10 +110,5 @@ func (h *Handler) InitRouter() *http.ServeMux {
 		mux.HandleFunc(route.Path, route.Handler)
 	}
 
-	//mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("./web/static"))))
-	//mux.Handle("/static/", http.StripPrefix("/post/", http.FileServer(http.Dir("./web/static"))))
-
-	//http.Handle("/", http.FileServer(http.Dir("./web/static")))
-
 	return mux
 }

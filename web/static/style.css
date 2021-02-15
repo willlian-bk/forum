@@ -207,6 +207,8 @@ a {
 .post .title {
 	padding: 7px 0px 0px 0px;
 	letter-spacing: -1px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .post .title a {
