@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID          int       `json:"id"`
@@ -12,30 +14,32 @@ type User struct {
 }
 
 type Post struct {
-	ID             int        `json:"id"`
-	UserID         int        `json:"user_id"`
-	Title          string     `json:"title"`
-	Content        string     `json:"content"`
-	Likes          int        `json:"likes"`
-	Dislikes       int        `json:"dislikes"`
-	Categories     []string   `json:"categories"`
-	Comments       []*Comment `json:"comments"`
-	CreatedDate    time.Time  `json:"created_date"`
-	UpdatedDate    time.Time  `json:"updated_date"`
+	ID          int        `json:"id"`
+	UserID      int        `json:"user_id"`
+	Title       string     `json:"title"`
+	Content     string     `json:"content"`
+	Likes       int        `json:"likes"`
+	Dislikes    int        `json:"dislikes"`
+	Categories  []string   `json:"categories"`
+	Comments    []*Comment `json:"comments"`
+	CreatedDate time.Time  `json:"created_date"`
+	UpdatedDate time.Time  `json:"updated_date"`
+
 	AuthorUsername string
 	FormatTime     string
 	Images         []string
 }
 
 type Comment struct {
-	ID             int       `json:"id"`
-	UserID         int       `json:"user_id"`
-	PostID         int       `json:"post_id"`
-	Content        string    `json:"content"`
-	Likes          int       `json:"likes"`
-	Dislikes       int       `json:"dislikes"`
-	CreatedDate    time.Time `json:"created_date"`
-	UpdatedDate    time.Time `json:"updated_date"`
+	ID          int       `json:"id"`
+	UserID      int       `json:"user_id"`
+	PostID      int       `json:"post_id"`
+	Content     string    `json:"content"`
+	Likes       int       `json:"likes"`
+	Dislikes    int       `json:"dislikes"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+
 	AuthorUsername string
 	FormatTime     string
 }

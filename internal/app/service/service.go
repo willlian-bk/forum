@@ -1,6 +1,8 @@
 package service
 
 import (
+	"mime/multipart"
+
 	"github.com/Akezhan1/forum/internal/app/models"
 	"github.com/Akezhan1/forum/internal/app/repository"
 )
@@ -22,6 +24,7 @@ type Post interface {
 	Filter(string, int) ([]*models.Post, error)
 	EstimatePost(string, int, string) error
 	SetImage(int, string) error
+	GenerateImagesFromFiles([]*multipart.FileHeader) ([]string, error)
 }
 
 type Comment interface {

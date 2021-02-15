@@ -3,13 +3,9 @@ package handler
 import (
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"github.com/Akezhan1/forum/internal/app/models"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (h *Handler) CreatePost() http.HandlerFunc {
@@ -38,7 +34,7 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 
 			r.Body = http.MaxBytesReader(w, r.Body, maxUploadImage)
 			if err := r.ParseMultipartForm(maxUploadImage); err != nil {
-				writeResponse(w, http.StatusInternalServerError, err.Error())
+				writeResponse(w, http.StatusInternalServerError, "Images size over 20Mb")
 				return
 			}
 
@@ -54,76 +50,24 @@ func (h *Handler) CreatePost() http.HandlerFunc {
 			formdata := r.MultipartForm
 			files := formdata.File["files"]
 
-			created := false
-
-			for i := range files {
-				file, err := files[i].Open()
-				if err != nil {
-					writeResponse(w, 500, err.Error())
-					return
-				}
-
-				defer file.Close()
-				buff := make([]byte, 512)
-				_, err = file.Read(buff)
-				if err != nil {
-					writeResponse(w, http.StatusInternalServerError, "Something Wrong")
-					return
-				}
-				fileType := http.DetectContentType(buff)
-				if fileType != "image/jpeg" && fileType != "image/png" && fileType != "image/jpg" && fileType != "image/gif" {
-					writeResponse(w, http.StatusInternalServerError, "Invalid File Type")
-					return
-				}
-				_, err = file.Seek(0, io.SeekStart)
-				if err != nil {
-					writeResponse(w, http.StatusInternalServerError, "Invalid File Type")
-					return
-				}
-				err = os.MkdirAll("./assets/images", os.ModePerm)
-				if err != nil {
-					writeResponse(w, http.StatusInternalServerError, err.Error())
-					return
-				}
-
-				imageName := uuid.NewV4().String()
-				destImage := fmt.Sprintf("/images/%s%s", imageName, filepath.Ext(files[i].Filename))
-				dst, err := os.Create("./assets" + destImage)
-				if err != nil {
-					writeResponse(w, http.StatusInternalServerError, err.Error())
-					return
-				}
-				defer dst.Close()
-				_, err = io.Copy(dst, file)
-				if err != nil {
-					writeResponse(w, http.StatusInternalServerError, err.Error())
-					return
-				}
-
-				if !created {
-					code, id, err := h.services.Post.Create(post)
-					if err != nil {
-						writeResponse(w, code, err.Error())
-						return
-					}
-
-					created = true
-					post.ID = id
-				}
-
-				if err := h.services.Post.SetImage(post.ID, destImage); err != nil {
-					writeResponse(w, http.StatusInternalServerError, err.Error())
-					return
-				}
+			filesPaths, err := h.services.Post.GenerateImagesFromFiles(files)
+			if err != nil {
+				writeResponse(w, http.StatusInternalServerError, err)
+				return
 			}
 
-			if !created {
-				code, id, err := h.services.Post.Create(post)
-				if err != nil {
-					writeResponse(w, code, err.Error())
+			code, id, err := h.services.Post.Create(post)
+			if err != nil {
+				writeResponse(w, code, err.Error())
+				return
+			}
+			post.ID = id
+
+			for _, path := range filesPaths {
+				if err := h.services.Post.SetImage(post.ID, path); err != nil {
+					writeResponse(w, http.StatusInternalServerError, err.Error())
 					return
 				}
-				post.ID = id
 			}
 
 			http.Redirect(w, r, fmt.Sprintf("/post/%d", post.ID), http.StatusFound)

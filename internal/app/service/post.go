@@ -3,12 +3,19 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Akezhan1/forum/internal/app/models"
 	"github.com/Akezhan1/forum/internal/app/repository"
+	uuid "github.com/satori/go.uuid"
 )
 
 type PostService struct {
@@ -35,6 +42,57 @@ func (ps *PostService) Create(post *models.Post) (int, int, error) {
 	}
 
 	return 200, int(id), nil
+}
+
+func (ps *PostService) GenerateImagesFromFiles(files []*multipart.FileHeader) ([]string, error) {
+	paths := []string{}
+
+	for i := range files {
+		file, err := files[i].Open()
+		if err != nil {
+			return nil, err
+		}
+
+		defer file.Close()
+		buff := make([]byte, 512)
+		_, err = file.Read(buff)
+		if err != nil {
+			return nil, err
+		}
+
+		fileType := http.DetectContentType(buff)
+		if fileType != "image/jpeg" && fileType != "image/png" && fileType != "image/jpg" && fileType != "image/gif" {
+			return nil, errors.New("Invalid File Type")
+		}
+
+		_, err = file.Seek(0, io.SeekStart)
+		if err != nil {
+			return nil, errors.New("Invalid File Type")
+		}
+
+		err = os.MkdirAll("./assets/images", os.ModePerm)
+		if err != nil {
+			return nil, err
+		}
+
+		imageName := uuid.NewV4().String()
+		destImage := fmt.Sprintf("/images/%s%s", imageName, filepath.Ext(files[i].Filename))
+
+		dst, err := os.Create("./assets" + destImage)
+		if err != nil {
+			return nil, err
+		}
+		defer dst.Close()
+
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			return nil, err
+		}
+
+		paths = append(paths, destImage)
+	}
+
+	return paths, nil
 }
 
 func (ps *PostService) Get(id int) (*models.Post, error) {
@@ -186,6 +244,10 @@ func (ps *PostService) validateParams(post *models.Post) error {
 
 	if post.Content == "" {
 		return errors.New("Invalid Content")
+	}
+
+	if post.Categories == nil {
+		return errors.New("Invalid Category")
 	}
 
 	if categories, err := ps.repo.GetValidCategories(); err != nil {
