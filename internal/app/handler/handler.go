@@ -22,7 +22,34 @@ func NewHandler(s *service.Service) *Handler {
 }
 
 func (h *Handler) InitRouter() *http.ServeMux {
-	routes := []route{
+	routes := h.createRoutes()
+	mux := http.NewServeMux()
+	fileServer := http.FileServer(http.Dir("./web/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+
+	images := http.FileServer(http.Dir("./assets/images"))
+	mux.Handle("/images/", http.StripPrefix("/images/", images))
+
+	for _, route := range routes {
+
+		if route.NeedAuth {
+			route.Handler = h.NeedAuthMiddleware(route.Handler)
+		}
+
+		if route.OnlyUnauth {
+			route.Handler = h.OnlyUnauthMiddleware(route.Handler)
+		}
+
+		route.Handler = h.CookiesCheckMiddleware(route.Handler)
+
+		mux.HandleFunc(route.Path, route.Handler)
+	}
+
+	return mux
+}
+
+func (h *Handler) createRoutes() []route {
+	return []route{
 		{
 			Path:       "/",
 			Handler:    h.Index(),
@@ -87,28 +114,4 @@ func (h *Handler) InitRouter() *http.ServeMux {
 			OnlyUnauth: false,
 		},
 	}
-
-	mux := http.NewServeMux()
-	fileServer := http.FileServer(http.Dir("./web/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
-
-	images := http.FileServer(http.Dir("./assets/images"))
-	mux.Handle("/images/", http.StripPrefix("/images/", images))
-
-	for _, route := range routes {
-
-		if route.NeedAuth {
-			route.Handler = h.NeedAuthMiddleware(route.Handler)
-		}
-
-		if route.OnlyUnauth {
-			route.Handler = h.OnlyUnauthMiddleware(route.Handler)
-		}
-
-		route.Handler = h.CookiesCheckMiddleware(route.Handler)
-
-		mux.HandleFunc(route.Path, route.Handler)
-	}
-
-	return mux
 }
