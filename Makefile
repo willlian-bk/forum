@@ -10,4 +10,9 @@ git:
 	git commit -m "$(comment)"
 	git push
 
+.PHONY: git-conf
+git-conf:
+	git config --global user.email "$(email)"
+	git config --global user.name "$(name)"
+
 .DEFAULT_GOAL := build
