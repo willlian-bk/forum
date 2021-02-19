@@ -15,4 +15,9 @@ git-conf:
 	git config --global user.email "$(email)"
 	git config --global user.name "$(name)"
 
+.PHONY: docker-run
+docker-run:
+	docker build -t "$(image-name)" .
+	docker container run -p 8080:8080 --name "$(container-name)" "$(image-name)"
+
 .DEFAULT_GOAL := build
