@@ -238,11 +238,11 @@ func (ps *PostService) EstimatePost(postID string, userID int, types string) err
 }
 
 func (ps *PostService) validateParams(post *models.Post) error {
-	if post.Title == "" {
+	if post.Title == "" || strings.TrimSpace(post.Title) == "" {
 		return errors.New("Invalid Title")
 	}
 
-	if post.Content == "" {
+	if post.Content == "" || strings.TrimSpace(post.Content) == "" {
 		return errors.New("Invalid Content")
 	}
 
